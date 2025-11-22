@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usbpdparser"
+version = "1.0.0"
+description = "A Python API for parsing USB Power Delivery messages."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name="JohnScott", email="ruaorz@gmail.com" }]
+license = { text = "LGPL-3.0-or-later" }
+
+[project.urls]
+Homepage = "https://github.com/JohnScotttt/USB_PD_Parser_API_Py"
