@@ -1,5 +1,5 @@
 from typing import Any, List, Tuple
-from tools.vendor_ids_dict import VENDOR_IDS
+from usbpdparser.tools.vendor_ids_dict import VENDOR_IDS
 from usbpdparser.core import metadata
 
 ColorToken = Tuple[str, str]  # (style, text)
