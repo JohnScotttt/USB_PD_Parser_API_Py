@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.0.1
+# Version 1.0.2
 
 import re
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -1414,6 +1414,10 @@ class Vendor_Defined(metadata):
                     self._value.append(metadata(lst2str(data[i*4:(i+1)*4]), (i*32, (i+1)*32-1), f"Mode {i}",
                                                 f"0x{bytes(data[i*4:(i+1)*4][::-1]).hex().upper()}"))
             elif cmd in ["Enter Mode", "Exit Mode", "Attention"]:
+                for i in range(1, num_objs):
+                    self._value.append(metadata(lst2str(data[i*4:(i+1)*4]), (i*32, (i+1)*32-1), f"VDO {i}",
+                                                f"0x{bytes(data[i*4:(i+1)*4][::-1]).hex().upper()}"))
+            else:
                 for i in range(1, num_objs):
                     self._value.append(metadata(lst2str(data[i*4:(i+1)*4]), (i*32, (i+1)*32-1), f"VDO {i}",
                                                 f"0x{bytes(data[i*4:(i+1)*4][::-1]).hex().upper()}"))
