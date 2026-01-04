@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.0.2
+# Version 1.0.3
 
 import re
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -1366,7 +1366,7 @@ class Vendor_Defined(metadata):
         if self._value[0]["VDM Type"].value() == "Structured":
             cmd = self._value[0]["Command"].value()
             cmd_type = self._value[0]["Command Type"].value()
-            if cmd == "Discover Identity" and cmd_type in ["ACK", "NAK", "BUSY"]:
+            if cmd == "Discover Identity" and cmd_type == "ACK":
                 self._value.extend([
                     ID_Header_VDO(lst2str(data[4:8]), (32, 63), sop=kwargs["sop"]),
                     metadata(lst2str(data[8:12]), (64, 95), "Cert Stat VDO", f"0x{bytes(data[8:12][::-1]).hex().upper()}")
@@ -2431,7 +2431,7 @@ class Parser:
                          last_rdo=self.last_rdo,
                          debug=self.debug)
         
-            if msg[2].field() != "Error Data":
+            if msg[1].field() != "Error Data":
                 if is_pdo(msg):
                     self.last_pdo = msg
                 if provide_ext(msg):
