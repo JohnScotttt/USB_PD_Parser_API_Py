@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.0
+# Version 1.1.1
 
 import re
 
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -556,6 +556,7 @@ class F_VRDO(metadata):
     def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
         self._pdo = kwargs["pdo"]
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:4], (31, 28), "Object Position", int(raw[0:4], 2)),
             metadata(raw[4:5], (27, 27), "Giveback", bool(int(raw[4:5]))),
@@ -593,6 +594,7 @@ class BRDO(metadata):
     def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
         self._pdo = kwargs["pdo"]
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:4], (31, 28), "Object Position", int(raw[0:4], 2)),
             metadata(raw[4:5], (27, 27), "Giveback", bool(int(raw[4:5]))),
@@ -632,14 +634,22 @@ class PPS_RDO(metadata):
             metadata(raw[6:7], (25, 25), "USB Communications Capable", bool(int(raw[6:7]))),
             metadata(raw[7:8], (24, 24), "No USB Suspend", bool(int(raw[7:8]))),
             metadata(raw[8:9], (23, 23), "Unchunked Extended Messages Supported", bool(int(raw[8:9]))),
-            metadata(raw[9:10], (22, 22), "EPR Capable", bool(int(raw[9:10]))),
-            metadata(raw[10:11], (21, 21), "Reserved"),
-            metadata(raw[11:23], (20, 9), "Output Voltage", f"{int(raw[11:23], 2) / 50}V"),
-            metadata(raw[23:25], (8, 7), "Reserved"),
-            metadata(raw[25:32], (6, 0), "Operating Current", f"{int(raw[25:32], 2) / 20}A"),
+            metadata(raw[9:10], (22, 22), "EPR Capable", bool(int(raw[9:10])))
         ]
-
-        self._quick_rdo = f"[{self._value[0].value()}] P {self._value[8].value()}@{self._value[10].value()}"
+        if prop_protocol:
+            self._value.extend([
+                metadata(raw[10:23], (21, 9), "Output Voltage", f"{int(raw[10:23], 2) / 50}V"),
+                metadata(raw[23:32], (8, 0), "Operating Current", f"{int(raw[23:32], 2) / 20}A"),
+            ])
+            self._quick_rdo = f"[{self._value[0].value()}] P {self._value[7].value()}@{self._value[8].value()}"
+        else:
+            self._value.extend([
+                metadata(raw[10:11], (21, 21), "Reserved"),
+                metadata(raw[11:23], (20, 9), "Output Voltage", f"{int(raw[11:23], 2) / 50}V"),
+                metadata(raw[23:25], (8, 7), "Reserved"),
+                metadata(raw[25:32], (6, 0), "Operating Current", f"{int(raw[25:32], 2) / 20}A"),
+            ])
+            self._quick_rdo = f"[{self._value[0].value()}] P {self._value[8].value()}@{self._value[10].value()}"
     
     def pdo(self) -> metadata:
         return self._pdo
@@ -652,6 +662,7 @@ class AVS_RDO(metadata):
     def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
         self._pdo = kwargs["pdo"]
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:4], (31, 28), "Object Position", int(raw[0:4], 2)),
             metadata(raw[4:5], (27, 27), "Reserved"),
