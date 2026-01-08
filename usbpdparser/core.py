@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.0.3
+# Version 1.1.0
 
 import re
 
 
-__version__ = "1.0.3"
+__version__ = "1.1.0"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -294,8 +294,9 @@ class VDM_header(metadata):
 
 
 class FPDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "FPDO"),
             metadata(raw[2:3], (29, 29), "Dual-Role Power", bool(int(raw[2:3]))),
@@ -327,8 +328,9 @@ class FPDO(metadata):
 
 
 class FPDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
 
         FRSR = {
             "00": "Not Supported",
@@ -352,8 +354,9 @@ class FPDO_S(metadata):
 
 
 class BPDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "BPDO"),
             metadata(raw[2:12], (29, 20), "Maximum Voltage", f"{int(raw[2:12], 2) / 20}V"),
@@ -377,8 +380,9 @@ class BPDO(metadata):
 
 
 class BPDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "BPDO Sink"),
             metadata(raw[2:12], (29, 20), "Maximum Voltage", f"{int(raw[2:12], 2) / 20}V"),
@@ -388,8 +392,9 @@ class BPDO_S(metadata):
 
 
 class VPDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "VPDO"),
             metadata(raw[2:12], (29, 20), "Maximum Voltage", f"{int(raw[2:12], 2) / 20}V"),
@@ -413,8 +418,9 @@ class VPDO(metadata):
 
 
 class VPDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "VPDO Sink"),
             metadata(raw[2:12], (29, 20), "Maximum Voltage", f"{int(raw[2:12], 2) / 20}V"),
@@ -424,44 +430,65 @@ class VPDO_S(metadata):
 
 
 class PPS_PDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO"),
             metadata(raw[2:4], (29, 28), "APDO Type", "SPR PPS"),
-            metadata(raw[4:5], (27, 27), "PPS Power Limited", bool(int(raw[4:5]))),
-            metadata(raw[5:7], (26, 25), "Reserved"),
-            metadata(raw[7:15], (24, 17), "Maximum Voltage", f"{int(raw[7:15], 2) / 10}V"),
-            metadata(raw[15:16], (16, 16), "Reserved"),
-            metadata(raw[16:24], (15, 8), "Minimum Voltage", f"{int(raw[16:24], 2) / 10}V"),
-            metadata(raw[24:25], (7, 7), "Reserved"),
-            metadata(raw[25:32], (6, 0), "Maximum Current", f"{int(raw[25:32], 2) / 20}A"),
+            metadata(raw[4:5], (27, 27), "PPS Power Limited", bool(int(raw[4:5])))
         ]
-
-        self._quick_pdo = f"P {int(raw[16:24], 2) / 10}-{int(raw[7:15], 2) / 10}V@{int(raw[25:32], 2) / 20}A"
+        if prop_protocol:
+            self._value.extend([
+                metadata(raw[5:15], (26, 17), "Maximum Voltage", f"{int(raw[5:15], 2) / 10}V"),
+                metadata(raw[15:24], (16, 8), "Minimum Voltage", f"{int(raw[15:24], 2) / 10}V"),
+                metadata(raw[24:32], (7, 0), "Maximum Current", f"{int(raw[24:32], 2) / 20}A")
+            ])
+            self._quick_pdo = f"P {int(raw[15:24], 2) / 10}-{int(raw[5:15], 2) / 10}V@{int(raw[24:32], 2) / 20}A"
+        else:
+            self._value.extend([
+                metadata(raw[5:7], (26, 25), "Reserved"),
+                metadata(raw[7:15], (24, 17), "Maximum Voltage", f"{int(raw[7:15], 2) / 10}V"),
+                metadata(raw[15:16], (16, 16), "Reserved"),
+                metadata(raw[16:24], (15, 8), "Minimum Voltage", f"{int(raw[16:24], 2) / 10}V"),
+                metadata(raw[24:25], (7, 7), "Reserved"),
+                metadata(raw[25:32], (6, 0), "Maximum Current", f"{int(raw[25:32], 2) / 20}A")
+            ])
+            self._quick_pdo = f"P {int(raw[16:24], 2) / 10}-{int(raw[7:15], 2) / 10}V@{int(raw[25:32], 2) / 20}A"
 
     def quick_pdo(self) -> str:
         return self._quick_pdo
 
 
 class PPS_PDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO Sink"),
-            metadata(raw[2:4], (29, 28), "APDO Type", "SPR PPS"),
-            metadata(raw[4:7], (27, 25), "Reserved"),
-            metadata(raw[7:15], (24, 17), "Maximum Voltage", f"{int(raw[7:15], 2) / 10}V"),
-            metadata(raw[15:16], (16, 16), "Reserved"),
-            metadata(raw[16:24], (15, 8), "Minimum Voltage", f"{int(raw[16:24], 2) / 10}V"),
-            metadata(raw[24:25], (7, 7), "Reserved"),
-            metadata(raw[25:32], (6, 0), "Maximum Current", f"{int(raw[25:32], 2) / 20}A"),
+            metadata(raw[2:4], (29, 28), "APDO Type", "SPR PPS")
         ]
+        if prop_protocol:
+            self._value.extend([
+                metadata(raw[4:15], (27, 17), "Maximum Voltage", f"{int(raw[4:15], 2) / 10}V"),
+                metadata(raw[15:24], (16, 8), "Minimum Voltage", f"{int(raw[15:24], 2) / 10}V"),
+                metadata(raw[24:32], (7, 0), "Maximum Current", f"{int(raw[24:32], 2) / 20}A")
+            ])
+        else:
+            self._value.extend([
+                metadata(raw[4:7], (27, 25), "Reserved"),
+                metadata(raw[7:15], (24, 17), "Maximum Voltage", f"{int(raw[7:15], 2) / 10}V"),
+                metadata(raw[15:16], (16, 16), "Reserved"),
+                metadata(raw[16:24], (15, 8), "Minimum Voltage", f"{int(raw[16:24], 2) / 10}V"),
+                metadata(raw[24:25], (7, 7), "Reserved"),
+                metadata(raw[25:32], (6, 0), "Maximum Current", f"{int(raw[25:32], 2) / 20}A")
+            ])
 
 
 class EPR_AVS_PDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO"),
             metadata(raw[2:4], (29, 28), "APDO Type", "EPR AVS"),
@@ -479,8 +506,9 @@ class EPR_AVS_PDO(metadata):
 
 
 class EPR_AVS_PDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO Sink"),
             metadata(raw[2:4], (29, 28), "APDO Type", "EPR AVS"),
@@ -488,13 +516,14 @@ class EPR_AVS_PDO_S(metadata):
             metadata(raw[6:15], (25, 17), "Maximum Voltage", f"{int(raw[6:15], 2) / 10}V"),
             metadata(raw[15:16], (16, 16), "Reserved"),
             metadata(raw[16:24], (15, 8), "Minimum Voltage", f"{int(raw[16:24], 2) / 10}V"),
-            metadata(raw[24:32], (7, 0), "PDP", f"{int(raw[24:32], 2)}W"),
+            metadata(raw[24:32], (7, 0), "PDP", f"{int(raw[24:32], 2)}W")
         ]
 
 
 class SPR_AVS_PDO(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO"),
             metadata(raw[2:4], (29, 28), "APDO Type", "SPR AVS"),
@@ -511,8 +540,9 @@ class SPR_AVS_PDO(metadata):
 
 
 class SPR_AVS_PDO_S(metadata):
-    def __init__(self, raw: str, bit_loc: tuple, field: str):
+    def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
+        prop_protocol = kwargs["prop_protocol"]
         self._value = [
             metadata(raw[0:2], (31, 30), "Supply Type", "APDO Sink"),
             metadata(raw[2:4], (29, 28), "APDO Type", "SPR AVS"),
@@ -594,6 +624,7 @@ class PPS_RDO(metadata):
     def __init__(self, raw: str, bit_loc: tuple, field: str, **kwargs):
         super().__init__(raw, bit_loc, field)
         self._pdo = kwargs["pdo"]
+        prop_protocol = kwargs.get("prop_protocol", False)
         self._value = [
             metadata(raw[0:4], (31, 28), "Object Position", int(raw[0:4], 2)),
             metadata(raw[4:5], (27, 27), "Reserved"),
@@ -1074,20 +1105,23 @@ class Source_Capabilities(metadata):
         super().__init__(bit_loc=bit_loc, field="Data Objects")
         self._raw = lst2str(data, '>')
         num_objs = kwargs["header"][1].value()
+        prop_protocol = kwargs["prop_protocol"]
         self._value = []
         for i in range(num_objs):
             sub_raw = lst2str(data[i*4:(i+1)*4])
-            self._value.append(pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}"))
+            self._value.append(pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}",
+                                                 prop_protocol=prop_protocol))
 
 
 class Request(metadata):
     def __init__(self, data: list, bit_loc: tuple, **kwargs):
         super().__init__(bit_loc=bit_loc, field="Data Objects")
         self._raw = lst2str(data, '>')
-        if kwargs["last_pdo"] == None:
+        last_pdo = kwargs["last_pdo"]
+        if last_pdo == None:
             self._value = "Invalid Request Message"
             return
-        pdo_list = kwargs["last_pdo"]["Data Objects"].value()
+        pdo_list = last_pdo["Data Objects"].value()
         sub_raw = lst2str(data[0:4])
         pdo = pdo_list[int(sub_raw[0:4], 2) - 1]
         self._value = [(rdo_type(pdo)(sub_raw, (0, 31), "RDO", pdo=pdo))]
@@ -1124,10 +1158,12 @@ class Sink_Capabilities(metadata):
         super().__init__(bit_loc=bit_loc, field="Data Objects")
         self._raw = lst2str(data, '>')
         num_objs = kwargs["header"][1].value()
+        prop_protocol = kwargs["prop_protocol"]
         self._value = []
         for i in range(num_objs):
             sub_raw = lst2str(data[i*4:(i+1)*4])
-            self._value.append(sink_pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}"))
+            self._value.append(sink_pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}",
+                                                      prop_protocol=prop_protocol))
 
 
 class Battery_Status(metadata):
@@ -2127,6 +2163,7 @@ class EPR_Source_Capabilities(metadata):
         self._raw = lst2str(data, '>')
         num_objs = kwargs["header"][1].value()
         ex_header = kwargs["ex_header"]
+        prop_protocol = kwargs["prop_protocol"]
         if ex_header["Request Chunk"].value():
             self._full_raw = self._raw
             self._full_value = None
@@ -2155,7 +2192,8 @@ class EPR_Source_Capabilities(metadata):
             if sub_raw == "0" * 32:
                 self._full_value.append(metadata(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}", "Empty PDO"))
             else:
-                self._full_value.append(pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}"))
+                self._full_value.append(pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}",
+                                                          prop_protocol=prop_protocol))
 
         self._field_map = {m.field(): m for m in self._full_value}
         if "Reserved" in self._field_map:
@@ -2197,6 +2235,7 @@ class EPR_Sink_Capabilities(metadata):
         self._raw = lst2str(data, '>')
         num_objs = kwargs["header"][1].value()
         ex_header = kwargs["ex_header"]
+        prop_protocol = kwargs["prop_protocol"]
         if ex_header["Request Chunk"].value():
             self._full_raw = self._raw
             self._full_value = None
@@ -2225,7 +2264,8 @@ class EPR_Sink_Capabilities(metadata):
             if sub_raw == "0" * 32:
                 self._full_value.append(metadata(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}", "Empty PDO"))
             else:
-                self._full_value.append(sink_pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}"))
+                self._full_value.append(sink_pdo_type(sub_raw)(sub_raw, (i*32, (i+1)*32-1), f"PDO {i+1}",
+                                                               prop_protocol=prop_protocol))
 
         self._field_map = {m.field(): m for m in self._full_value}
         if "Reserved" in self._field_map:
@@ -2333,6 +2373,7 @@ class pd_msg(metadata):
                  last_pdo: metadata = None,
                  last_ext: metadata = None,
                  last_rdo: metadata = None,
+                 prop_protocol: bool = False,
                  debug: bool = False):
         super().__init__(field="pd")
         end_of_msg = len(data)
@@ -2357,18 +2398,20 @@ class pd_msg(metadata):
                                                                                 ex_header=self._value[2],
                                                                                 last_pdo=last_pdo,
                                                                                 last_ext=last_ext,
-                                                                                last_rdo=last_rdo))
+                                                                                last_rdo=last_rdo,
+                                                                                prop_protocol=prop_protocol))
             else:
                 if self._value[1]["Message Type"].value() in globals():
                     self._value.append(globals()[self._value[1]["Message Type"].value()](data[2:end_of_msg],
                                                                                     (16, (end_of_msg)*8-1),
                                                                                     sop=sop,
                                                                                     header=self._value[1],
-                                                                                    last_pdo=last_pdo))
+                                                                                    last_pdo=last_pdo,
+                                                                                    prop_protocol=prop_protocol))
         except Exception as e:
             self._value = [
                 metadata(sop, ('--', '--'), "SOP*", sop),
-                metadata(lst2str(data), (0, end_of_msg), "Error Data",
+                metadata(lst2str(data, ">"), (0, end_of_msg), "Error Data",
                          f"0x{bytes(data[0:end_of_msg]).hex().upper()}")
             ]
             if self.debug:
@@ -2386,6 +2429,7 @@ class Parser:
               sop: str = None,  # SOP, SOP', SOP'', SOP'_DEBUG, SOP''_DEBUG
               raw: list | str | int | bytes = None,
               verify_crc: bool = False,
+              prop_protocol: bool = False,
               last_pdo: metadata = None,
               last_ext: metadata = None,
               last_rdo: metadata = None) -> metadata:
@@ -2422,6 +2466,7 @@ class Parser:
                          last_pdo=last_pdo,
                          last_ext=last_ext,
                          last_rdo=last_rdo,
+                         prop_protocol=prop_protocol,
                          debug=self.debug)
         else:
             msg = pd_msg(data,
@@ -2429,6 +2474,7 @@ class Parser:
                          last_pdo=self.last_pdo,
                          last_ext=self.last_ext,
                          last_rdo=self.last_rdo,
+                         prop_protocol=prop_protocol,
                          debug=self.debug)
         
             if msg[1].field() != "Error Data":

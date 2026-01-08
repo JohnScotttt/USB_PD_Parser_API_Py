@@ -1,6 +1,6 @@
 # 基于Python的USB PD报文解析通用API
 
-![version](https://img.shields.io/badge/Versio-1.0.3-green)
+![version](https://img.shields.io/badge/Versio-1.1.0-green)
 
 ## 项目介绍
 
@@ -66,7 +66,7 @@ import usbpdparser
 
 若要使用流式解析PD报文，需要您创建 `Parser` 类实例，其提供一种方法。
 
-`parse(sop, raw, verify_crc, last_pdo, last_ext, last_rdo)` 方法将解析PD报文， `sop` 为该条报文的SOP信息， `raw` 可以是uint8 list、str、int、bytes中的任意一种， `verify_crc` 如果为True则会校验CRC是否正确。如果您同时不提供 `last_pdo` 、 `last_ext` 、 `last_rdo` 参数则默认解析实例内保存的报文，返回解析完的元数据。如您提供 `last_pdo` 、 `last_ext` 、 `last_rdo` 其中任一参数则会以提供的为准（为提供的为None），其中 `last_pdo` 为可能的Request消息提供PDO信息， `last_ext` 为可能的分包的Extended消息提供上下文， `last_rdo` 为可能的Status消息提供RDO信息。
+`parse(sop, raw, verify_crc, prop_protocol, last_pdo, last_ext, last_rdo)` 方法将解析PD报文， `sop` 为该条报文的SOP信息， `raw` 可以是uint8 list、str、int、bytes中的任意一种， `verify_crc` 如果为True则会校验CRC是否正确。`prop_protocol`如果为True则会支持一些私有协议的解析。如果您同时不提供 `last_pdo` 、 `last_ext` 、 `last_rdo` 参数则默认解析实例内保存的报文，返回解析完的元数据。如您提供 `last_pdo` 、 `last_ext` 、 `last_rdo` 其中任一参数则会以提供的为准（为提供的为None），其中 `last_pdo` 为可能的Request消息提供PDO信息， `last_ext` 为可能的分包的Extended消息提供上下文， `last_rdo` 为可能的Status消息提供RDO信息。
 
 ### 一些工具函数
 

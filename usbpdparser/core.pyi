@@ -1,7 +1,7 @@
 # Copyright (c) 2025 JohnScotttt
-# Version 1.0.3
+# Version 1.1.0
 
-__version__ = "1.0.3"
+__version__ = "1.1.0"
 
 
 class metadata:
@@ -41,6 +41,7 @@ class Parser:
               sop: str = None,  # SOP, SOP', SOP'', SOP'_DEBUG, SOP''_DEBUG
               raw: list | str | int | bytes = None,
               verify_crc: bool = False,
+              prop_protocol: bool = False,
               last_pdo: metadata = None,
               last_ext: metadata = None,
               last_rdo: metadata = None) -> metadata: ...
