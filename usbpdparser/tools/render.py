@@ -4,8 +4,6 @@ from usbpdparser.core import metadata
 
 ColorToken = Tuple[str, str]  # (style, text)
 
-__all__ = ["render"]
-
 def _fmt_bit_loc(msg: metadata, indent: str) -> str:
     b0, b1 = msg.bit_loc()
     if b0 == b1:
@@ -46,7 +44,7 @@ def render_metadata(msg: metadata, level: int, out: List[ColorToken]):
     return out
 
 
-def render(data: Any) -> List[ColorToken]:
+def renderer(data: Any) -> List[ColorToken]:
     buf: List[ColorToken] = []
     if isinstance(data, list):
         for m in data:

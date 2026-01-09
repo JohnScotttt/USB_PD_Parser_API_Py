@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.1
+# Version 1.1.2
 
 import re
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
