@@ -1,5 +1,5 @@
-from typing import Any, List, Tuple
+from usbpdparser.core import metadata
 
-ColorToken = Tuple[str, str]
+ColorToken = tuple[str, str]
 
-def renderer(data: Any) -> List[ColorToken]: ...
+def renderer(data: list | metadata) -> list[ColorToken]: ...

@@ -1,6 +1,6 @@
 # 基于Python的USB PD报文解析通用API
 
-![version](https://img.shields.io/badge/Versio-1.1.2-green)
+![version](https://img.shields.io/badge/Versio-1.1.3-green)
 
 ## 项目介绍
 

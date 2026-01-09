@@ -1,8 +1,7 @@
-from typing import Any, List, Tuple
 from usbpdparser.tools.vendor_ids_dict import VENDOR_IDS
 from usbpdparser.core import metadata
 
-ColorToken = Tuple[str, str]  # (style, text)
+ColorToken = tuple[str, str]  # (style, text)
 
 def _fmt_bit_loc(msg: metadata, indent: str) -> str:
     b0, b1 = msg.bit_loc()
@@ -11,7 +10,7 @@ def _fmt_bit_loc(msg: metadata, indent: str) -> str:
     return f"{indent}{'[b'+str(msg.bit_loc()[0])+'-b'+str(msg.bit_loc()[1])+'] ':<12}"
 
 
-def render_metadata(msg: metadata, level: int, out: List[ColorToken]):
+def render_metadata(msg: metadata, level: int, out: list[ColorToken]):
     indent = '    ' * level
     if not isinstance(msg.value(), list):
         out.append(('red', _fmt_bit_loc(msg, indent)))
@@ -44,8 +43,8 @@ def render_metadata(msg: metadata, level: int, out: List[ColorToken]):
     return out
 
 
-def renderer(data: Any) -> List[ColorToken]:
-    buf: List[ColorToken] = []
+def renderer(data: list | metadata) -> list[ColorToken]:
+    buf: list[ColorToken] = []
     if isinstance(data, list):
         for m in data:
             render_metadata(m, 0, buf)
