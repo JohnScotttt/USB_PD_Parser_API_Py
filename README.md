@@ -1,6 +1,6 @@
 # 基于Python的USB PD报文解析通用API
 
-![version](https://img.shields.io/badge/Versio-1.1.3-green)
+![version](https://img.shields.io/badge/Versio-1.1.4-green)
 
 ## 项目介绍
 
@@ -70,7 +70,7 @@ import usbpdparser
 
 ### 一些工具函数
 
-本项目还提供四个工具函数，分别是 `is_pdo(msg)` 、 `is_rdo(msg)` 、 `provide_ext(msg)` 、 `render(data)` 。
+本项目还提供四个工具函数，分别是 `is_pdo(msg)` 、 `is_rdo(msg)` 、 `provide_ext(msg)` 、 `render(data, level_thr)` 。
 
 #### is_pdo(msg)
 
@@ -84,6 +84,8 @@ import usbpdparser
 
 该函数接收一个metadata类，判断其是否为有效的Extended消息的上下文，返回bool类型。
 
-#### render(data)
+#### render(data, level_thr)
 
-该函数接收一个metadata类或是metadata类为元素的list，返回一个元素为（color style, text）的元组，其中text包含换行信息，直接使用无换行打印即可预览metadata。
+该函数中 `data` 接收一个metadata类或以metadata类为元素的list，作为需要渲染的数据； `level_thr` 接收int作为raw格式展示十六进制或是二进制的划分等级，小于该显示级则显示为十六进制。返回一个元素为（color style, text）的元组，其中text包含换行信息，直接使用无换行打印即可预览metadata。
+
+该函数位于usbpdparser.tools下。

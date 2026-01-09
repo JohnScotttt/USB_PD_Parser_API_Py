@@ -10,7 +10,7 @@ def _fmt_bit_loc(msg: metadata, indent: str) -> str:
     return f"{indent}{'[b'+str(msg.bit_loc()[0])+'-b'+str(msg.bit_loc()[1])+'] ':<12}"
 
 
-def render_metadata(msg: metadata, level: int, out: list[ColorToken]):
+def render_metadata(msg: metadata, level: int, out: list[ColorToken], level_thr: int = 1) -> list[ColorToken]:
     indent = '    ' * level
     if not isinstance(msg.value(), list):
         out.append(('red', _fmt_bit_loc(msg, indent)))
@@ -21,7 +21,7 @@ def render_metadata(msg: metadata, level: int, out: list[ColorToken]):
         if not msg.raw().isdigit():
             out.append(('green', f"({msg.raw()})\n"))
         else:
-            if level < 1:
+            if level < level_thr:
                 raw_bin = msg.raw()
                 out.append(('green', f"(0x{int(raw_bin, 2):0{int(len(raw_bin)/4)+(1 if len(raw_bin)%4 else 0)}X})\n"))
             else:
@@ -39,15 +39,15 @@ def render_metadata(msg: metadata, level: int, out: list[ColorToken]):
             raw_bin = msg.raw()
             out.append(('green', f"(0x{int(raw_bin, 2):0{int(len(raw_bin)/4)+(1 if len(raw_bin)%4 else 0)}X})\n"))
         for sub in msg.value():
-            render_metadata(sub, level + 1, out)
+            render_metadata(sub, level + 1, out, level_thr)
     return out
 
 
-def renderer(data: list | metadata) -> list[ColorToken]:
+def renderer(data: list | metadata, level_thr: int) -> list[ColorToken]:
     buf: list[ColorToken] = []
     if isinstance(data, list):
         for m in data:
-            render_metadata(m, 0, buf)
+            render_metadata(m, 0, buf, level_thr)
     else:
-        render_metadata(data, 0, buf)
+        render_metadata(data, 0, buf, level_thr)
     return buf

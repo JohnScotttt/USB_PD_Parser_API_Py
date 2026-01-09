@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.3
+# Version 1.1.4
 
 import re
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -1133,9 +1133,11 @@ class Request(metadata):
             self._value = "Invalid Request Message"
             return
         pdo_list = last_pdo["Data Objects"].value()
+        prop_protocol = kwargs["prop_protocol"]
         sub_raw = lst2str(data[0:4])
         pdo = pdo_list[int(sub_raw[0:4], 2) - 1]
-        self._value = [(rdo_type(pdo)(sub_raw, (0, 31), "RDO", pdo=pdo))]
+        self._value = [(rdo_type(pdo)(sub_raw, (0, 31), "RDO", pdo=pdo,
+                                      prop_protocol=prop_protocol))]
 
 
 class BIST(metadata):
@@ -1322,13 +1324,14 @@ class Enter_USB(metadata):
 class EPR_Request(metadata):
     def __init__(self, data: list, bit_loc: tuple, **kwargs):
         super().__init__(bit_loc=bit_loc, field="Data Objects")
+        prop_protocol = kwargs["prop_protocol"]
         self._raw = lst2str(data, '>')
         rdo_raw = lst2str(data[0:4])
         copy_of_pdo_raw = lst2str(data[4:8])
         copy_of_pdo = pdo_type(copy_of_pdo_raw)(copy_of_pdo_raw, (32, 63), "Copy of PDO")
 
         self._value = [
-            rdo_type(copy_of_pdo)(rdo_raw, (0, 31), "RDO", pdo=copy_of_pdo),
+            rdo_type(copy_of_pdo)(rdo_raw, (0, 31), "RDO", pdo=copy_of_pdo, prop_protocol=prop_protocol),
             copy_of_pdo
         ]
 
