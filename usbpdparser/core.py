@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.4
+# Version 1.1.5
 
 import re
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -1328,7 +1328,7 @@ class EPR_Request(metadata):
         self._raw = lst2str(data, '>')
         rdo_raw = lst2str(data[0:4])
         copy_of_pdo_raw = lst2str(data[4:8])
-        copy_of_pdo = pdo_type(copy_of_pdo_raw)(copy_of_pdo_raw, (32, 63), "Copy of PDO")
+        copy_of_pdo = pdo_type(copy_of_pdo_raw)(copy_of_pdo_raw, (32, 63), "Copy of PDO", prop_protocol=prop_protocol)
 
         self._value = [
             rdo_type(copy_of_pdo)(rdo_raw, (0, 31), "RDO", pdo=copy_of_pdo, prop_protocol=prop_protocol),

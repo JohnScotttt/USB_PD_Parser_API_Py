@@ -1,7 +1,7 @@
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.4
+# Version 1.1.5
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 class metadata:
