@@ -1,11 +1,11 @@
 # Start of File
 # Copyright (c) 2025 JohnScotttt
-# Version 1.1.5
+# Version 1.1.6
 
 import re
 
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 
 def lst2str(lst: list, order: str = '<') -> str:
@@ -2389,7 +2389,7 @@ class pd_msg(metadata):
                  last_rdo: metadata = None,
                  prop_protocol: bool = False,
                  debug: bool = False):
-        super().__init__(field="pd")
+        super().__init__(field="PD")
         end_of_msg = len(data)
         self._raw = lst2str(data[0:end_of_msg], '>')
         self._bit_loc = (0, (end_of_msg) * 8 - 1)
@@ -2440,7 +2440,7 @@ class Parser:
         self.last_rdo = None
 
     def parse(self,
-              sop: str = None,  # SOP, SOP', SOP'', SOP'_DEBUG, SOP''_DEBUG
+              sop: str = None,  # SOP, SOP', SOP'', SOP'_DEBUG, SOP''_DEBUG, Hard_Reset, Cable_Reset
               raw: list | str | int | bytes = None,
               verify_crc: bool = False,
               prop_protocol: bool = False,
@@ -2474,7 +2474,9 @@ class Parser:
             else:
                 return metadata(lst2str(data, '>'), (0, len(data)*8-1), "System", "CRC Check Failed")
         
-        if last_ext != None or last_rdo != None or last_pdo != None:
+        if sop in ["Hard_Reset", "Cable_Reset"]:
+            return metadata(sop, ('--', '--'), "PD", sop)
+        elif last_ext != None or last_rdo != None or last_pdo != None:
             msg = pd_msg(data,
                          sop=sop,
                          last_pdo=last_pdo,
